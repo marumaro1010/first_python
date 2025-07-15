@@ -7,13 +7,30 @@ from datetime import datetime
 from cpbl_db import conn,add_player_list
 from teams_data import mapping_team
 import time
+import argparse
+
 
 options = Options()
 options.add_argument('--headless')
 options.add_argument('--disable-gpu')
 
 driver = webdriver.Chrome(options=options)
-driver.get("https://www.cpbl.com.tw/team?ClubNo=AAA")
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--clubNo', type=str, required=True)
+
+args = parser.parse_args()
+
+club_no = args.clubNo
+try:
+    if mapping_team(club_no) == "NONE":
+        raise ValueError("Not found value")
+except ValueError as e:
+    print(e)
+    exit()
+
+url = f"https://www.cpbl.com.tw/team?ClubNo={club_no}"
+driver.get(url)
 time.sleep(5)
 
 # 取得目前網址

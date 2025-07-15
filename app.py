@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from datetime import datetime
-from cpbl_db import conn,add_picther
+from cpbl_db import conn, add_picther
 import time
 
 options = Options()
