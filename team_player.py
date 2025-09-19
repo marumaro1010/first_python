@@ -4,7 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from urllib.parse import urlparse, parse_qs
 from bs4 import BeautifulSoup
 from datetime import datetime
-from cpbl_db import conn,add_player_list
+from cpbl_db import conn, add_player_list, update_player_list
 from teams_data import mapping_team
 import time
 import argparse
@@ -50,11 +50,15 @@ for players in playerList:
         teamId = mapping_team(clubNo)
         pos = player_detail.find('div', class_="pos").getText()
         name = player_detail.find('div', class_="name").getText()
-        add_player_list(
-            teamId=teamId,
-            pos=pos,
-            name=name
-        )
+
+        # 判斷球員是否已存在
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM player_list WHERE team = ? AND name = ?", (teamId, name))
+        result = cursor.fetchone()
+        if result:
+            update_player_list(teamId=teamId, pos=pos, name=name)
+        else:
+            add_player_list(teamId=teamId, pos=pos, name=name)
         print(f"球員資料：{pos},{name}）")
 # close
 conn.close()
